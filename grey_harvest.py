@@ -10,7 +10,7 @@
 '''              application (see README.md).
 """
 
-__version__   = '0.1.6'
+__version__   = '0.1.5'
 __author__    = 'Gabriel "s0lst1c3" Ryan'
 __license__   = 'MIT'
 __copyright__ = 'Copyright (c) 2015'
@@ -21,7 +21,7 @@ import sys
 import argparse
 from time import sleep
 from bs4  import BeautifulSoup
-from lxml import etree
+from lxml import etree, html
 
 ''' configs '''
 DOC_ROOT          = 'http://freeproxylists.com'
@@ -112,8 +112,8 @@ class GreyHarvester(object):
     
         ''' request the xml object '''
         proxy_xml = requests.get(ajax_endpoint)
-        print(proxy_xml.content)
-        root = etree.XML(proxy_xml.content)
+        
+        root = html.fromstring(bytes(proxy_xml.text, encoding='utf8'))
         quote = root.xpath('quote')[0]
         
         ''' extract the raw text from the body of the quote tag '''
@@ -183,7 +183,7 @@ class GreyHarvester(object):
         raw_html = response.text
     
         ''' convert raw html into BeautifulSoup object '''
-        soup = BeautifulSoup(raw_html, 'lxml')
+        soup = BeautifulSoup(raw_html)
 
         for url in soup.select('table tr td table tr td a'):
             if 'elite #' in url.text:
